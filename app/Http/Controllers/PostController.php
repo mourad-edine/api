@@ -12,18 +12,31 @@ use Illuminate\Http\Request;
 class PostController extends Controller
 {
 
-    public function tentifier(Request $request){
-        $pers = Client::where('nom',$request->nom)->first();
-        if($pers->password == $request->password){
+    public function tentifier(Request $request)
+    {
+        $pers = Client::where('nom', $request->nom)->first();
+        if ($pers->password == $request->password) {
             return response()->json([
-                'id'=> $pers->id,
-                'message'=>'valide'
+                'id' => $pers->id,
+                'message' => 'valide'
             ]);
         }
     }
     public function retour()
     {
-        $retours = Command::all();
+        $retours = Command::where('etat',0)->get();
+        return response()->json(
+            [
+                'utilisateur' => $retours,
+                'messages' => 'tous est parfait',
+                'code' => 200
+            ]
+        );
+    }
+
+    public function retour2()
+    {
+        $retours = Command::where('etat',1)->get();
         return response()->json(
             [
                 'utilisateur' => $retours,
@@ -35,7 +48,9 @@ class PostController extends Controller
 
     public function commandcli($id)
     {
-        $retours = Command::where('client_id',$id)->get();
+        $retours = Command::where('client_id', $id)
+        ->where('etat',0)
+        ->get();
         return response()->json(
             [
                 'utilisateur' => $retours,
@@ -47,7 +62,7 @@ class PostController extends Controller
 
     public function nombre($id)
     {
-        $retours = Command::where('client_id',$id)->count();
+        $retours = Command::where('client_id', $id)->count();
         return response()->json(
             [
                 'utilisateur' => $retours,
@@ -80,7 +95,8 @@ class PostController extends Controller
         }
     }
 
-    public function enregistrer(Request $request){
+    public function enregistrer(Request $request)
+    {
         $enregistre = new Command();
         $enregistre->designation = $request->designation;
         $enregistre->nombre = $request->nombre;
@@ -90,26 +106,28 @@ class PostController extends Controller
 
         $enregistre->save();
 
-        if($enregistre){
+        if ($enregistre) {
             return response()->json(
                 [
-                    'message'=>"insertion reussi"
+                    'message' => "insertion reussi"
                 ]
             );
         }
     }
 
-    public function testRelation($id){
+    public function testRelation($id)
+    {
         $sup = Produit::find($id);
         $nom = $sup->nom;
         return response()->json([
             'nom' => $nom,
-            'supplements'=> $sup->categories,
-            'messages'=> 'voici votre supplement'
+            'supplements' => $sup->categories,
+            'messages' => 'voici votre supplement'
         ]);
     }
 
-    public function Trouvecategorie($id){
+    public function Trouvecategorie($id)
+    {
         $sup = Categorie::find($id);
         return response()->json(
             [
@@ -121,7 +139,8 @@ class PostController extends Controller
         );
     }
 
-    public function Adduser(Request $request){
+    public function Adduser(Request $request)
+    {
         $nouveau = new Client();
         $nouveau->nom = $request->nom;
         $nouveau->password = $request->password;
@@ -129,91 +148,143 @@ class PostController extends Controller
 
         $nouveau->save();
 
-        if($nouveau){
+        if ($nouveau) {
             return response()->json([
                 'message' => 'insertion reussi'
             ]);
         }
     }
 
-    public function ajoutProduit(Request $request){
+    public function ajoutProduit(Request $request)
+    {
         $nouveau = new Produit();
         $nouveau->nom = $request->nom;
         $nouveau->save();
 
-        if($nouveau){
+        if ($nouveau) {
             return response()->json([
                 'message' => 'insertion reussi'
             ]);
         }
     }
 
-    public function addsous(Request $request){
+    public function addsous(Request $request)
+    {
         $nouveau = new Categorie();
         $nouveau->nom_categorie = "$request->nom";
         $nouveau->prix = $request->prix;
         $nouveau->produit_id = $request->produit_id;
         $nouveau->save();
-        if($nouveau){
+        if ($nouveau) {
             return response()->json([
                 'message' => 'insertion reussi'
             ]);
         }
     }
 
-    public function addsup(Request $request){
+    public function addsup(Request $request)
+    {
         $nouveau = new Supplement();
         $nouveau->nom_supplement = "$request->nom";
         $nouveau->prix = $request->prix;
         $nouveau->categorie_id = $request->categorie_id;
         $nouveau->save();
-        if($nouveau){
+        if ($nouveau) {
             return response()->json([
                 'message' => 'insertion reussi'
             ]);
         }
     }
 
-    public function deleteprod($id){
+    public function deleteprod($id)
+    {
         $del = Produit::find($id);
         $del->delete();
-        if($del){
+        if ($del) {
             return response()->json([
-                'message'=>'effacé avec success'
+                'message' => 'effacé avec success'
             ]);
         }
     }
 
-    public function deletesup($id){
+    public function deletesup($id)
+    {
         $del = Supplement::find($id);
         $del->delete();
-        if($del){
+        if ($del) {
             return response()->json([
-                'message'=>'effacé avec success'
+                'message' => 'effacé avec success'
             ]);
         }
     }
 
-    public function deletesous($id){
+    public function deletesous($id)
+    {
         $del = Categorie::find($id);
         $del->delete();
-        if($del){
+        if ($del) {
             return response()->json([
-                'message'=>'effacé avec success'
+                'message' => 'effacé avec success'
             ]);
         }
     }
 
-    public function Annuler($id){
+    public function Annuler($id)
+    {
         $del = Command::find($id);
         $del->delete();
-        if($del){
+        if ($del) {
             return response()->json([
-                'message'=>'effacé avec success'
+                'message' => 'effacé avec success'
             ]);
         }
     }
 
+    public function modifier($id)
+    {
+        $com = Command::findOrFail($id);
+        if ($com->choix == 'prendre') {
+            $com->update([
+                'choix' => 'livrer',
+            ]);
+        } else if ($com->choix == 'livrer') {
+            $com->update([
+                'choix' => 'prendre',
+            ]);
+        }
+        if ($com) {
+            return response()->json([
+                'message' => 'modifié avec success'
+            ]);
+        }
+    }
+
+    public function payer($id)
+    {
+        $etat = Command::findOrFail($id);
+        if ($etat->etat == 0) {
+            $etat->update([
+                'etat' => 1,
+            ]);
+        }
+        if ($etat) {
+            return response()->json([
+                'message' => 'modifié avec success'
+            ]);
+        }
+    }
+
+    public function commandeinfo($id)
+    {
+        $etat = Command::findOrFail($id)->first();
+        if ($etat) {
+            return response()->json([
+                'id'=>$etat->id,
+                'info' => $etat,
+                'message' => 'modifié avec success'
+            ]);
+        }
+    }
 
 
 }

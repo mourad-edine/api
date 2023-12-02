@@ -10,7 +10,7 @@ class Command extends Model
     use HasFactory;
     protected $table = 'commands';
 
-    protected $fillable = ['designation','nombre','prix_unitaire','total','client_id'];
+    protected $fillable = ['designation','nombre','prix_unitaire','total','etat','choix','client_id'];
 
     public function client(){
         return $this->belongsTo(Client::class);;

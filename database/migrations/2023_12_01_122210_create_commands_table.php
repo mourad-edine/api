@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string("nombre");
             $table->string("prix_unitaire");
             $table->string("total");
+            $table->boolean("etat")->default(false);
+            $table->string('choix')->default('prendre');
             $table->foreignId('client_id')->constrained();
             $table->timestamps();
         });

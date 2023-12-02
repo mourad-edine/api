@@ -21,6 +21,8 @@ Route::delete('/deletecom/{id}',[PostController::class,'Annuler']);
 
 
 Route::get('/hote',[PostController::class,'retour']);
+Route::get('/hote2',[PostController::class,'retour2']);
+
 Route::post('/create',[PostController::class,'store']);
 Route::get('/choses',[PostController::class,'chose']);
 Route::delete('/deletesup/{id}',[PostController::class,'deletesup']);
@@ -35,3 +37,6 @@ Route::post('/addsousproduit',[PostController::class,'addsous']);
 Route::post('/verifier',[PostController::class,'tentifier']);
 Route::get('/perso/{id}',[PostController::class,'commandcli']);
 Route::get('/compter/{id}',[PostController::class,'nombre']);
+Route::post('/modifier/{id}',[PostController::class,'modifier']);
+Route::post('/payement/{id}',[PostController::class,'payer']);
+Route::get('/commandeinfo/{id}',[PostController::class,'commandeinfo']);
