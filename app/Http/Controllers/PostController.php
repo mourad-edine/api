@@ -7,6 +7,7 @@ use App\Models\Command;
 use App\Models\Produit;
 use App\Models\Supplement;
 use App\Models\Client;
+use App\Models\Supplie;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -18,14 +19,14 @@ class PostController extends Controller
         if ($pers->password == $request->password) {
             return response()->json([
                 'id' => $pers->id,
-                'autre'=> $pers,
+                'autre' => $pers,
                 'message' => 'valide'
             ]);
         }
     }
     public function retour()
     {
-        $retours = Command::where('etat',0)->get();
+        $retours = Command::where('etat', 0)->get();
         return response()->json(
             [
                 'utilisateur' => $retours,
@@ -37,7 +38,7 @@ class PostController extends Controller
 
     public function retour2()
     {
-        $retours = Command::where('etat',1)->get();
+        $retours = Command::where('etat', 1)->get();
         return response()->json(
             [
                 'utilisateur' => $retours,
@@ -50,8 +51,8 @@ class PostController extends Controller
     public function commandcli($id)
     {
         $retours = Command::where('client_id', $id)
-        ->where('etat',0)
-        ->get();
+            ->where('etat', 0)
+            ->get();
         return response()->json(
             [
                 'utilisateur' => $retours,
@@ -280,14 +281,15 @@ class PostController extends Controller
         $etat = Command::findOrFail($id);
         if ($etat) {
             return response()->json([
-                'id'=>$etat->id,
-                'client_id'=>$etat->client_id,
+                'id' => $etat->id,
+                'client_id' => $etat->client_id,
                 'info' => $etat,
             ]);
         }
     }
 
-    public function finduser($id){
+    public function finduser($id)
+    {
         $use = Client::findOrFail($id);
         if ($use) {
             return response()->json([
@@ -296,5 +298,22 @@ class PostController extends Controller
         }
     }
 
-
+    public function plus(Request $request)
+    {
+        $latest = Command::latest()->first();
+        $supplement = $request->supplement;
+        if ($supplement) {
+            foreach ($supplement as $supplements) {
+                $test = Supplie::insert([
+                    'supplie' => $supplements,
+                    'command_id' => $latest->id
+                ]);
+            }
+            if($test){
+                return response()->json([
+                    'message' => 'supplement inséré'
+                ]);
+            }
+        }
+    }
 }
