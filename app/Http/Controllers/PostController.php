@@ -18,6 +18,7 @@ class PostController extends Controller
         if ($pers->password == $request->password) {
             return response()->json([
                 'id' => $pers->id,
+                'autre'=> $pers,
                 'message' => 'valide'
             ]);
         }
@@ -276,12 +277,21 @@ class PostController extends Controller
 
     public function commandeinfo($id)
     {
-        $etat = Command::findOrFail($id)->first();
+        $etat = Command::findOrFail($id);
         if ($etat) {
             return response()->json([
                 'id'=>$etat->id,
+                'client_id'=>$etat->client_id,
                 'info' => $etat,
-                'message' => 'modifié avec success'
+            ]);
+        }
+    }
+
+    public function finduser($id){
+        $use = Client::findOrFail($id);
+        if ($use) {
+            return response()->json([
+                'info_user' => $use,
             ]);
         }
     }

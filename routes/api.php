@@ -40,3 +40,4 @@ Route::get('/compter/{id}',[PostController::class,'nombre']);
 Route::post('/modifier/{id}',[PostController::class,'modifier']);
 Route::post('/payement/{id}',[PostController::class,'payer']);
 Route::get('/commandeinfo/{id}',[PostController::class,'commandeinfo']);
+Route::get('/finduser/{id}',[PostController::class,'finduser']);
